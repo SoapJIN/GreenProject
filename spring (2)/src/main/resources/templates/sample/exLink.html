@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--/* thymeleaf 사용위해 추가 */-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .target{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<!-- <a th:href="@{/sample/exView/{sno}(sno=${dto.sno})}">[[${dto}]]</a> &lt;!&ndash;/* 보낼 {sno}의 값을 세팅=>(sno=${dto.sno}) */ -->
+<!--/* dto.sno의 값인 숫자를 5자리 수의 Integer 포맷으로 변환하여 출력 */-->
+<!--/* jsp를 이용한 숫자 날짜 처리위해 별도의 jstl 설정이 필요하지만, thymeleaf 에서는 #numbers, #dates 등 별도 설정없이 사용 가능함 */-->
+<!--/* 내장 객체들이 많은 기능을 지원하지만 아쉽게도 JAVA 8버전에 등장한 LocalDate 타입이나,
+       LocalDateTime에 대해서는 상당히 복잡한 방식으로 처리해야 하는 단점이 있고, 이를 해결하기 위해
+       build.gradle에 dependency를 추가하여 해결함(thymeleaf-extras-java8time) */-->
+    <ul>
+        <li th:each="dto:${list}">
+            [[${dto.sno}]]---[[${#temporals.format(dto.regTime, 'yyyy/MM/dd')}]] <!--/* 날짜 형식 변환해줌(build.gradle에 dependencies 먼저 추가해야함) */-->
+        </li>
+    </ul>
+    <ul>
+        <li th:each="dto:${list}">
+            [[${#numbers.formatInteger(dto.sno,5)}]]
+        </li>
+    </ul>
+
+
+</body>
+</html>

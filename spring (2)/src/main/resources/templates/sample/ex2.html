@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!--/* thymeleaf 사용위해 추가 */-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .target{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <!--/* th:block 안에서는 각 속성마다 th: 안붙여도 됨 */-->
+    <th:block th:each="dto,state : ${list}">
+        <li th:text="${dto.sno%5==0}? ${dto.sno}:${dto.first}" th:class="${dto.sno%5==0}? 'target'"></li>
+    </th:block>
+</body>
+</html>
