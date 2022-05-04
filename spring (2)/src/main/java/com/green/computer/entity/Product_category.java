@@ -5,22 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart {
-
+public class Product_category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int cart_number;
-
-    private String cart_value;
-    private int product_count;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;
+    private int category_code;
 }
