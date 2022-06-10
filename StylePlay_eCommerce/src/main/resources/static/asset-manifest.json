@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.eab0bfc1.css",
+    "main.js": "/static/js/main.1f397076.js",
+    "static/media/banner-2.jpg": "/static/media/banner-2.e792fe61a57973a5b60b.jpg",
+    "static/media/banner-1.jpg": "/static/media/banner-1.1f5bb6ba30a89f69db3e.jpg",
+    "static/media/nillkin-case-1.jpg": "/static/media/nillkin-case-1.60dec4fb7de719b33e51.jpg",
+    "static/media/banner-0.jpg": "/static/media/banner-0.83a86819981256ecaebe.jpg",
+    "index.html": "/index.html",
+    "main.eab0bfc1.css.map": "/static/css/main.eab0bfc1.css.map",
+    "main.1f397076.js.map": "/static/js/main.1f397076.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.eab0bfc1.css",
+    "static/js/main.1f397076.js"
+  ]
+}

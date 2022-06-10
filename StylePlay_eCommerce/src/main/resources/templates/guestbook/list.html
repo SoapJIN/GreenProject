@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic::setContent(~{this::content})}">
+    <th:block th:fragment="content"> <!--/* 함수 호출 시 파라미터 전달 영역 */-->
+        <h1 class="mt-4">GuestBook list page
+            <span>
+                <a th:href="@{/guestbook/register}">
+                    <button type="button" class="btn btn-outline-primary">등록</button>
+                </a>
+            </span>
+        </h1>
+        <form action="/guestbook/list" id="searchForm" method="">
+            <div class="input-group">
+                <input type="hidden" name="page" value="1">
+                <div class="input-group-prepend">
+                    <select name="type" class="custom-select">
+                        <option th:selected="${pageRequestDTO.type=='t'}" value="t">제목</option>
+                        <option th:selected="${pageRequestDTO.type=='c'}" value="c">내용</option>
+                        <option th:selected="${pageRequestDTO.type=='w'}" value="w">작성자</option>
+                        <option th:selected="${pageRequestDTO.type=='tc'}" value="tc">제목 + 내용</option>
+                        <option th:selected="${pageRequestDTO.type=='tcw'}" value="tcw">제목 + 내용 + 작성자</option>
+                    </select>
+                </div>
+                <input type="text" class="form-control" name="keyword" th:value="${pageRequestDTO.keyword}">
+                <div class="input-group-append" id="button-addon4">
+                    <button class="btn btn-outline-secondary btn-search">검색</button>
+                    <button class="btn btn-outline-secondary btn-clear">취소</button>
+                </div>
+            </div>
+        </form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Gno</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Writer</th>
+                    <th scope="col">RegDate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="dto:${result.dtoList}">
+                    <th scope="row">
+                        <a th:href="@{/guestbook/read(gno=${dto.gno},page=${result.page},type=${pageRequestDTO.type},keyword=${pageRequestDTO.keyword})}">
+                            [[${dto.gno}]]
+                        </a>
+                    </th>
+                    <td>[[${dto.title}]]</td>
+                    <td>[[${dto.writer}]]</td>
+                    <td>[[${#temporals.format(dto.regDate,'yyyy/MM/dd')}]]</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination 파트(아래) -->
+        <ul class="pagination h-100 justify-content-center align-items-lg-center">
+            <li class="page-item" th:if="${result.prev}">
+                <a class="page-link" th:href="@{/guestbook/list(page=${result.start-1},type=${pageRequestDTO.type},keyword=${pageRequestDTO.keyword})}" tabindex="-1">이전</a>
+            </li>
+            <li th:class=" 'page-item' + ${result.page == page ? ' active':''} " th:each=" page: ${result.pageList} ">
+                <a class="page-link" th:href="@{/guestbook/list(page=${page},size=${result.size},type=${pageRequestDTO.type},keyword=${pageRequestDTO.keyword})}">[[${page}]]</a>
+            </li>
+            <li class="page-item" th:if="${result.next}">
+                <a class="page-link" th:href="@{/guestbook/list(page=${result.end+1},type=${pageRequestDTO.type},keyword=${pageRequestDTO.keyword})}" tabindex="+1">다음</a>
+            </li>
+        </ul>
+        <!-- modal -->
+        <div class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">모달 제목</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>여기는 모달 바디 테스트 영역</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                        <button class="btn btn-primary">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- inline -->
+        <script th:inline="javascript">
+            <!-- 모달창 실행 -->
+            var msg = [[${msg}]]
+            console.log("msg"+msg);
+            if(msg) $(".modal").modal();
+
+            <!-- 검색 조건 버튼 실행 -->
+            var searchForm = $("#searchForm");
+            $('.btn-search').click(function (e){
+                searchForm.submit();
+            })
+            $('.btn-clear').click(function (e){
+                searchForm.empty().submit();
+            })
+        </script>
+    </th:block>
+</th:block>
