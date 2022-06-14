@@ -1,5 +1,11 @@
-import { ADD_TO_BASKET, DECREASE_FROM_BASKET, EMPTY_BASKET, GET_USERDATA_FROM_BASKET, MODIFY_FROM_BASKET, REMOVE_FROM_BASKET } from "../../redux/cart_constants";
-
+import {
+  ADD_TO_BASKET,
+  DECREASE_FROM_BASKET,
+  EMPTY_BASKET,
+  GET_USERDATA_FROM_BASKET,
+  MODIFY_FROM_BASKET,
+  REMOVE_FROM_BASKET,
+} from "../../redux/cart_constants";
 
 export const addCart = (id, title, price, image) => {
   return {
@@ -29,7 +35,7 @@ export const modifyCart = (id, count) => {
   };
 };
 
-export const deleteCart = (id,) => {
+export const deleteCart = (id) => {
   return {
     type: REMOVE_FROM_BASKET,
     item: { id },

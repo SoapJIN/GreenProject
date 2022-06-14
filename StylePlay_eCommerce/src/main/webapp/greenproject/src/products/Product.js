@@ -6,26 +6,7 @@ import axios from "axios";
 import { ADD_TO_BASKET } from "../redux/cart_constants";
 
 function Product(props) {
-  const { price, id, title, image, heading } = props;
-
-  let percentOff;
-  let offPrice = `${price}원`;
-  if (props.percentOff && props.percentOff > 0) {
-    percentOff = (
-      <div
-        className="badge bg-dim py-2 text-white position-absolute"
-        style={{ top: "0.5rem", left: "0.5rem" }}
-      >
-        {props.percentOff}% OFF
-      </div>
-    );
-
-    offPrice = (
-      <>
-        <del>{price}원</del> {price - (props.percentOff * price) / 100}원
-      </>
-    );
-  }
+  const { price, id, title, image, heading, itemType } = props;
 
   const dispatch = useDispatch();
   const addCart = useCallback(
@@ -65,10 +46,9 @@ function Product(props) {
       <div className="card shadow-sm">
         <Link
           to={`/products/${id}`}
-          state={{ id, title, price, image, heading }}
+          state={{ id, title, price, image, heading, itemType }}
           replace
         >
-          {percentOff}
           <img className="card-img-top bg-dark cover h-96" alt="" src={image} />
         </Link>
         {/* 이미지 구성  */}
@@ -76,7 +56,7 @@ function Product(props) {
           <h5 className="card-title text-center text-dark text-truncate">
             {title}
           </h5>
-          <p className="card-text text-center text-muted mb-0">{offPrice}</p>
+          <p className="card-text text-center text-muted mb-0">{price}원</p>
           <div className="d-grid d-block">
             <button className="btn btn-outline-dark mt-3" onClick={click}>
               <FontAwesomeIcon icon={["fas", "cart-plus"]} /> 장바구니에 넣기

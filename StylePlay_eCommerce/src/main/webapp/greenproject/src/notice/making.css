@@ -1,0 +1,40 @@
+.tel {
+  text-decoration: none;
+}
+
+.tabmenu input:checked ~ label {
+  background: #ccc;
+}
+.tabmenu input:checked ~ .tabCon {
+  display: block;
+}
+
+.tabmenu {
+  display: flex;
+}
+
+.tabmenu a {
+  border: 1px solid lightgray;
+  float: left;
+  width: 50%;
+  padding: 10px;
+  text-decoration: none;
+  text-align: center;
+}
+
+table tr th {
+  text-align: center;
+}
+
+table tr td {
+  text-align: center;
+}
+
+.imageBox li{
+  list-style-type: none;
+  float: left;
+  margin-left :30px;
+  margin-top : 10px;
+  margin-bottom: 10px;
+}
+

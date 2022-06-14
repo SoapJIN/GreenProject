@@ -10,7 +10,6 @@ import {
 
 export const initialState = {
   basket: [],
-  isCouponUsed: false,
   totalAmount: 0,
   totalItem: 0,
 };
@@ -20,14 +19,15 @@ export const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_BASKET: {
       const exist = state.basket.find((x) => x.id === product.id);
+      
       if (exist) {
         return {
           ...state,
           basket: [
             ...state.basket.map((x) =>
-              x.id === product.id ? { ...x, count: x.count + 1 } : x
-            ),
-          ],
+               x.id === product.id ? { ...x, count: x.count + 1 } : x
+            )
+          ]
         };
       }
       return {
@@ -74,7 +74,18 @@ export const cartReducer = (state = initialState, action) => {
         basket: [],
       };
 
-    case GET_TOTAL:
+      case GET_USERDATA_FROM_BASKET:
+        const exist = state.basket.find((x) => x.id === product.id);
+        if (exist) {
+          return { ...state };
+        } else {
+          return {
+            ...state,
+            basket: [...state.basket, { ...product }]
+          };
+        }
+
+      case GET_TOTAL:
       let { totalItem, totalAmount } = state.basket.reduce(
         (accum, curVal) => {
           let { price, count } = curVal;
@@ -89,18 +100,8 @@ export const cartReducer = (state = initialState, action) => {
           totalAmount: 0,
         }
       );
-      return { ...state, totalAmount, totalItem, isCouponUsed: false };
+      return { ...state, totalAmount, totalItem };
 
-    case GET_USERDATA_FROM_BASKET:
-      const exist = state.basket.find((x) => x.id === product.id);
-      if (exist) {
-        return { ...state };
-      } else {
-        return {
-          ...state,
-          basket: [...state.basket, { ...product }],
-        };
-      }
 
     case REMOVE_FROM_BASKET:
       const index = state.basket.findIndex(

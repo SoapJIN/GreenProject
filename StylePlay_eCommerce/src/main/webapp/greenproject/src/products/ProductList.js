@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ScrollToTopOnMount from "../template/ScrollToTopOnMount";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { getData } from "./category/action/action";
+import Pagination from "../pagenation/Pagination";
 
 const categories = [
   "all",
@@ -18,7 +17,22 @@ const categories = [
   "accessory",
 ];
 
-function FilterMenuLeft() {
+function FilterMenuLeft({
+  changeFilter,
+  priceStart,
+  priceEnd,
+  setPriceEnd,
+  setPriceStart,
+}) {
+  const changePriceStart = (e) => {
+    console.log("1)", e.target.value);
+    setPriceStart(e.target.value);
+  };
+  const changePriceEnd = (e) => {
+    console.log("2)", e.target.value);
+    setPriceEnd(e.target.value);
+  };
+
   return (
     <ul className="list-group list-group-flush rounded">
       <li className="list-group-item d-none d-lg-block">
@@ -30,6 +44,9 @@ function FilterMenuLeft() {
                 key={index}
                 to={`/products/cate/${category}`}
                 className="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2"
+                onClick={() => {
+                  changeFilter();
+                }}
                 replace
               >
                 {category}
@@ -44,23 +61,24 @@ function FilterMenuLeft() {
         <div className="d-grid d-block mb-3">
           <div className="form-floating mb-2">
             <input
-              type="text"
+              type="number"
               className="form-control"
-              placeholder="Min"
-              defaultValue="100000"
+              placeholder="Max"
+              value={priceStart}
+              onChange={changePriceStart}
             />
             <label htmlFor="floatingInput">최소 금액</label>
           </div>
           <div className="form-floating mb-2">
             <input
-              type="text"
+              type="number"
               className="form-control"
               placeholder="Max"
-              defaultValue="500000"
+              value={priceEnd}
+              onChange={changePriceEnd}
             />
             <label htmlFor="floatingInput">최대 금액</label>
           </div>
-          <button className="btn btn-dark">찾기</button>
         </div>
       </li>
     </ul>
@@ -69,10 +87,12 @@ function FilterMenuLeft() {
 
 function ProductList() {
   const [viewType, setViewType] = useState({ grid: true });
-  const [page, setPage] = useState(0); // 현재페이지
-  const [number, setNumber] = useState(0); // 현재 번호
   const { id } = useParams(); //url cate뒤에 오는 카테고리 키워드!
-  const [heading, setheading] = useState("all"); //url cate뒤에 오는 카테고리 키워드!
+  const [page1, setPage1] = useState(1);
+  const [priceStart, setPriceStart] = useState(0);
+  const [priceEnd, setPriceEnd] = useState(0);
+  const [searchName, setSearchName] = useState("Search products...");
+
   const [items, setItems] = useState({
     content: [
       {
@@ -83,40 +103,33 @@ function ProductList() {
       },
     ],
     pageable: {},
+    size: 1,
+    totalElements: 0,
   });
 
-  //카테고리-필터 처리
-  const { data, filterData } = useSelector((state) => state.products);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getData(heading, items.content));
-  }, [dispatch, heading, items]);
-
-  const filter_Data =
-    filterData.length > 0 ? filterData : data !== undefined ? data : [];
-
-  useEffect(() => {
-    if (id !== undefined) {
-      setheading(id);
-    }
-  }, [id]);
   function changeViewType() {
     setViewType({
       grid: !viewType.grid,
     });
   }
 
+  //카테고리-필터 처리
   //page에 맞게 데이터 3개씩 가져옴
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(`/main/${page}`); // 가져오다
+      const response = await axios.get(
+        `/main/${page1 - 1}/${priceStart}/${priceEnd}/${id}/${searchName}`
+      ); // 가져오다
       setItems(response.data);
+      console.log(response.data);
     };
     fetchData();
-  }, [page]); // 페이지가 바뀔때마다 해당 페이지로 재 렌더링
+  }, [id, page1, priceStart, priceEnd, searchName]); // 페이지가 바뀔때마다 해당 페이지로 재 렌더링
 
-  console.log("items:", items);
-  console.log("page:", page);
+  const changeSearchName = (e) => {
+    console.log("2)", e.target.value);
+    setSearchName(e.target.value);
+  };
 
   return (
     <div className="container mt-5 py-4 px-xl-5">
@@ -126,43 +139,41 @@ function ProductList() {
           <li className="breadcrumb-item">
             <Link
               className="text-decoration-none link-secondary"
-              to="/products/cate/all"
+              to="/products"
               replace
             >
               ALL
             </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
-            {heading}
+            {id}
           </li>
         </ol>
       </nav>
       <div className="row mb-4 mt-lg-3">
         <div className="d-none d-lg-block col-lg-3">
           <div className="border rounded shadow-sm">
-            <FilterMenuLeft />
+            <FilterMenuLeft
+              priceStart={priceStart}
+              priceEnd={priceEnd}
+              setPriceStart={setPriceStart}
+              setPriceEnd={setPriceEnd}
+              page1={page1}
+              setItems={setItems}
+            />
           </div>
         </div>
         <div className="col-lg-9">
           <div className="d-flex flex-column h-100">
             <div className="row mb-3">
-              <div className="col-lg-3 d-none d-lg-block">
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  defaultValue=""
-                >
-                  <option value="">All Models</option>
-                  <option value="1">iPhone X</option>
-                  <option value="2">iPhone Xs</option>
-                  <option value="3">iPhone 11</option>
-                </select>
-              </div>
+              <div className="col-lg-3 d-none d-lg-block"></div>
               <div className="col-lg-9 col-xl-5 offset-xl-4 d-flex flex-row">
                 <div className="input-group">
                   <input
                     className="form-control"
                     type="text"
+                    value={searchName}
+                    onChange={changeSearchName}
                     placeholder="Search products..."
                     aria-label="search input"
                   />
@@ -186,7 +197,7 @@ function ProductList() {
                 (viewType.grid ? "row-cols-xl-3" : "row-cols-xl-2")
               }
             >
-              {filter_Data.map((content, index) => {
+              {items.content.map((content, index) => {
                 if (viewType.grid) {
                   return (
                     <Product
@@ -197,7 +208,8 @@ function ProductList() {
                       price={content.price}
                       image={content.imgUrl}
                       rating={5}
-                      heading={heading}
+                      heading={id}
+                      itemType={content.itemType}
                     />
                   );
                 }
@@ -210,63 +222,25 @@ function ProductList() {
                     price={content.price}
                     image={content.imgUrl}
                     rating={5}
-                    heading={heading}
+                    heading={id}
+                    itemType={content.itemType}
                   />
                 );
               })}
               {/* 보는 방식을 다르게 함! 보는 방식을 다르게 할 때 제품군의 매칭을 우리가 해결해야함 굳이 해야할지는 모르겠음 데이터만 잘들어가면 알아서해줄거 같기도함 */}
             </div>
-            <div className="d-flex align-items-center mt-auto">
+            <div className="d-flex flex-row justify-content-between">
               <span className="text-muted small d-none d-md-inline">
-                Showing 10 of 100
+                Showing {items.size} of {items.totalElements}
               </span>
               {/* 100개중에 10개를 보여주는데 이것도 데이터 받아서 구현할꺼면 해야함
                 아래 부분은 페이징 처리 부분 JPA로 처리해야함 */}
-              <nav aria-label="Page navigation example" className="ms-auto">
-                <ul className="pagination my-0">
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => setNumber(number - 3)}
-                      disabled={number === 0}
-                    >
-                      Previous
-                    </button>
-                  </li>
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => setPage(0 + number)}
-                    >
-                      {number + 1}
-                    </button>
-                  </li>
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => setPage(1 + number)}
-                    >
-                      {number + 2}
-                    </button>
-                  </li>
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => setPage(2 + number)}
-                    >
-                      {number + 3}
-                    </button>
-                  </li>
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => setNumber(number + 3)}
-                    >
-                      Next
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+              <Pagination
+                total={items.totalElements}
+                limit={items.size}
+                page={page1}
+                setPage={setPage1}
+              />
             </div>
           </div>
         </div>

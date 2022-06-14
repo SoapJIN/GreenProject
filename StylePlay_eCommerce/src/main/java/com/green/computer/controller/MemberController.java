@@ -89,6 +89,41 @@ public class MemberController {
             return new ResponseEntity(headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/edit/{email}")
+    public ResponseEntity editPost(@PathVariable("email") String email, MemberDTO dto, HttpServletResponse response, HttpSession session) throws IOException {
+        System.out.println("editPost 수정  컨트롤러 : " + dto );
+        //회원 가입 목록에 데이터 입력하지 않아도 성공으로 react에서 처리되는 오류 범함
+        if(dto.getEmail()==null) {
+            System.out.println("이메일입력하지 않았어요");
+            response.sendRedirect("http://localhost:3000/member/error");
+            return new ResponseEntity<MemberDTO>(dto,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Member member = memberService.findByEmail(dto.getEmail());
+        Long id = memberService.register(dto); //회원가입 저장
+        if(id!=null) {
+            System.out.println("id: " +id);
+            response.sendRedirect("http://localhost:3000");
+            return new ResponseEntity<MemberDTO>(dto,  HttpStatus.OK);
+        }
+        else {
+            System.out.println("일치하는 사람이 없어요");
+            response.sendRedirect("http://localhost:3000/member/error");
+            return new ResponseEntity<MemberDTO>(dto,  HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/edit/{email}")
+    public ResponseEntity memberEdit(@PathVariable String email,MemberDTO dto, HttpServletResponse response, HttpSession session) throws IOException {
+        System.out.println("memberEdit 컨트롤러 : " + email );
+//        HttpHeaders headers =new HttpHeaders();
+//        MemberDTO member = memberService.login(dto.getEmail(), dto.getPwd());
+//        if (member != null) {
+//            System.out.println("성공!");
+//            session.setAttribute("login",member);
+//            response.sendRedirect("http://localhost:3000/");
+            return new ResponseEntity(session.getAttribute("login"), HttpStatus.OK);
+        }
+
     @PostMapping("/login")
     public ResponseEntity logincCheckPost(MemberDTO dto, HttpServletResponse response, HttpSession session) throws IOException {
         System.out.println("logincCheck 컨트롤러 : " + dto );
@@ -114,9 +149,9 @@ public class MemberController {
         System.out.println("mypagePost 컨트롤러 : ");
         MemberDTO login = (MemberDTO) session.getAttribute("login");
         System.out.println("mypagePost login 된 사람 : " +login);
-        MemberDTO getmemberDTO =(MemberDTO) session.getAttribute("login");
-        Member member=memberService.findByEmail(getmemberDTO.getEmail());
-        return new ResponseEntity(member, HttpStatus.OK);
+
+        Member member = memberService.findByEmail(login.getEmail());
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
     @GetMapping("/error")
@@ -125,9 +160,18 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
-    public void logout(HttpSession session){
+    public ResponseEntity<String> logout(HttpServletResponse response, HttpSession session) throws IOException {
         System.out.println("로그아웃 컨트롤러 ");
-        session.invalidate();
+        System.out.println(session.getAttribute("login"));
+        if(session.getAttribute("login") == null) {
+            System.out.println("여기로 넘어오는지?");
+            return  new ResponseEntity<>("ok",HttpStatus.BAD_REQUEST);
+        }
+        else {
+            System.out.println("인벨리데이트로 넘어오는지?");
+            session.invalidate();
+            return  new ResponseEntity<>("ok",HttpStatus.OK);
+        }
     }
 }
 

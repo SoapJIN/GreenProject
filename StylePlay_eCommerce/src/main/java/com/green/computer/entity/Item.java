@@ -6,6 +6,7 @@ import com.green.computer.exception.OutOfStockException;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 
@@ -43,12 +44,18 @@ public class Item extends BaseEntity{
 
     private String itemType;
 
+    @CreatedBy
+    @Column(name = "createdBy"/*columnDefinition = "varchar(20) default 'item@naver.com'"*/)
+    private String createdBy;
+
+
     public void updateItem(ItemDTO dto){
         this.itemName = dto.getItemName();
         this.price = dto.getPrice();
         this.stockNumber = dto.getStockNumber();
         this.itemDetail = dto.getItemDetail();
         this.itemSellStatus = dto.getItemSellStatus();
+        this.itemType = dto.getItemType();
     }
 
     public void removeStock(int stockNumber){

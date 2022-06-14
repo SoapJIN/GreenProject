@@ -2,7 +2,7 @@ import RelatedProduct from "./RelatedProduct";
 import Ratings from "react-ratings-declarative";
 import { Link } from "react-router-dom";
 import ScrollToTopOnMount from "../../template/ScrollToTopOnMount";
-import Review from "./Review";
+import Reviews from "./Reviews";
 import React, { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router";
 import axios from "axios";
@@ -49,7 +49,7 @@ function BannerImage(props) {
 
 function ProductDetail() {
   const location = useLocation();
-  //const { price, id, title, image } = location;
+  //const { id, title, price, image, heading, itemtype } = location;
   const [message, setMessage] = useState({
     //item 정보
     itemName: "",
@@ -86,7 +86,6 @@ function ProductDetail() {
     };
     fetchData();
   }, [productId]);
-
   const [items, setItems] = useState({
     content: [
       {
@@ -106,6 +105,13 @@ function ProductDetail() {
     };
     fetchData();
   }, []);
+
+  //제품사진들(itemImgDtoList) 제대로 들어오는지 확인!
+  useEffect(() => {
+    if (message.itemImgDtoList) {
+      console.log(message.itemImgDtoList[0].imgUrl);
+    }
+  }, [message.itemImgDtoList]);
 
   //장바구니 클릭시
   const click_cart = () => {
@@ -155,13 +161,6 @@ function ProductDetail() {
     fetchData();
   };
 
-  //제품사진들(itemImgDtoList) 제대로 들어오는지 확인!
-  useEffect(() => {
-    if (message.itemImgDtoList) {
-      console.log(message.itemImgDtoList[0].imgUrl);
-    }
-  }, [message.itemImgDtoList]);
-
   function changeRating(newRating) {}
 
   return (
@@ -179,13 +178,16 @@ function ProductDetail() {
             </Link>
           </li>
           <li className="breadcrumb-item">
-            <a className="text-decoration-none link-secondary" href="!#">
+            <Link
+              className="text-decoration-none link-secondary"
+              to={`/products/cate/${location.state.heading}`}
+            >
               {location.state.heading}
               {/* 	
               앰퍼샌드(Ampersand) 라 불리며 & 문자를 뜻함.
               AND 라는 의미를 포함하여 javascript나 java 등에서 AND 연산 기호로 사용되기도 함.
               & 문자를 화면에 출력하고 싶으면 &amp; 를 사용. */}
-            </a>
+            </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             {message.itemName}
@@ -217,16 +219,16 @@ function ProductDetail() {
                   />
                   <BannerImage
                     image={
-                      message.itemImgDtoList
-                        ? message.itemImgDtoList[0].imgUrl
-                        : console.log("nullImages")
+                      message.itemImgDtoList[1]
+                        ? message.itemImgDtoList[1].imgUrl
+                        : message.itemImgDtoList[0].imgUrl
                     }
                   />
                   <BannerImage
                     image={
-                      message.itemImgDtoList
-                        ? message.itemImgDtoList[0].imgUrl
-                        : console.log("nullImages")
+                      message.itemImgDtoList[2]
+                        ? message.itemImgDtoList[2].imgUrl
+                        : message.itemImgDtoList[0].imgUrl
                     }
                   />
                 </div>
@@ -266,7 +268,7 @@ function ProductDetail() {
               <dd className="col-sm-8 mb-3">{message.id}</dd>
 
               <dt className="col-sm-4">카테고리</dt>
-              <dd className="col-sm-8 mb-3">Cases &amp; Covers</dd>
+              <dd className="col-sm-8 mb-3"> {location.state.itemType}</dd>
 
               <dt className="col-sm-4">상태</dt>
               <dd className="col-sm-8 mb-3">{message.itemSellStatus}</dd>
@@ -306,7 +308,7 @@ function ProductDetail() {
       <div className="row">
         <div className="col-md 12 mb-4">
           <hr />
-          <Review></Review>
+          <Reviews></Reviews>
         </div>
       </div>
       <div className="row">
@@ -329,5 +331,4 @@ function ProductDetail() {
     </div>
   );
 }
-
 export default ProductDetail;

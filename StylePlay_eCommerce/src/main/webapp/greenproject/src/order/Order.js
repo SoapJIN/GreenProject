@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useEffect } from "react";
 import { useState } from "react";
 import "./StyledComponents/CartItemSummryStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +13,7 @@ const Order = () => {
   const [myZipcode, setMyZipcode] = useState("");
   const [myAddress, setMyAddress] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [totalPrice,setTotalPrice] = useState(0);
   const [cartItemsMore, setCartItemsMore] = useState([]);
   const [user, setUser] = useState({
     name: "",
@@ -33,18 +34,6 @@ const Order = () => {
     fetchData();
   }, []);
 
-  //값 변경시 user value 바뀜
-  let name, value;
-  const handleInputs = (e) => {
-    name = e.target.name;
-    value = e.target.value;
-    setUser({ ...user, [name]: value });
-  };
-  const handleInput2 = (e) => {
-    value = myZipcode + "_" + myAddress + "_" + e.target.value;
-    setUser({ ...user, address: value });
-  };
-
   //email에 맞는 cartItemS 가져오기
   useEffect(() => {
     const getCartItems = async () => {
@@ -53,6 +42,19 @@ const Order = () => {
     };
     getCartItems();
   }, []);
+
+  //값 변경시 user value 바뀜
+  let name, value;
+  const handleInputs = (e) => {
+    name = e.target.name;
+    value = e.target.value;
+    setUser({ ...user, [name]: value });
+  };
+  const handleInput2 = (e) => {
+    value = myAddress + e.target.value;
+    setUser({ ...user, address: value });
+  };
+  console.log("user",user)
 
   //주문 넣기!
   var cartOrderDTOList = [];
@@ -76,6 +78,7 @@ const Order = () => {
         }
       });
       if (response) alert("주문 완료!");
+      window.location.replace("/");
     };
     fetchData();
   };
@@ -98,23 +101,77 @@ const Order = () => {
     setIsOpen(false);
   }
 
+
+  //결제 API
+    useEffect(()=>{
+      const jquery = document.createElement("script");
+      jquery.src="https://code.jquery.com/jquery-1.12.4.min.js";
+      const iamport = document.createElement("script");
+      iamport.src ="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js";
+      document.head.appendChild(jquery);
+      document.head.appendChild(iamport);
+      return ()=>{
+        document.head.removeChild(jquery);
+        document.head.removeChild(iamport);
+      }
+    },[])
+
+
+    function onClickPayment() {
+      /* 1. 가맹점 식별하기 */
+      const { IMP } = window;
+      IMP.init('imp27499198');
+     
+      /* 2. 결제 데이터 정의하기 */
+      const data = {
+        pg: 'kakaopay',                           // PG사
+        pay_method: 'card',                           // 결제수단
+        merchant_uid:`mid_${new Date().getTime()}`,   // 주문번호
+        name: '주문명:결제테스트',                  // 주문명
+        amount: totalPrice,                                 // 결제금액
+        buyer_name: user.name,                           // 구매자 이름
+        buyer_tel: user.phone,                     // 구매자 전화번호
+        buyer_email: user.email,               // 구매자 이메일
+        buyer_addr: user.address,                    // 구매자 주소
+        buyer_postcode : myZipcode
+      };
+  
+      /* 4. 결제 창 호출하기 */
+      IMP.request_pay(data, callback);
+    }
+  
+    /* 3. 콜백 함수 정의하기 */
+    function callback(response) {
+      console.log("결제response",response)
+      const {
+        success,
+        error_msg,
+      } = response;
+      if (success) {
+        handleSubmit(cartItemsMore);
+      } else {
+        alert(`결제 실패: ${error_msg}`);
+      }
+    }
+
   return (
     <div className="Instruction">
       <div className="Instruction-Main">
         <div className="Instruction-Main-left">
-          <div className="Instruction-Main-left-email">
+          <div className="mb-4">
             <div className="Instruction-Main-left-email-top">
               <div className="flex w-full">
                 <h5 className="text-[16px] font-bold">Recipient Info</h5>
                 <p className="pl-1 text-[12px]">수령자 정보</p>
               </div>
             </div>
-            <div className="mb-3 Instruction-Main-left-email-bottom">
+            <div className="mb-1 Instruction-Main-left-email-bottom">
+              <label className="mt-3 pl-1 text-[12px] underline underline-offset-2">이메일</label>
               <input
                 type="email"
                 name="email"
-                value={user.email}
-                className="focus:ring-indigo-500 mt-2 mb-2  outline-none focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md border-gray-300 py-2"
+                defaultValue={user.email}
+                className="focus:ring-indigo-500 mt-1 mb-1  outline-none focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md border-gray-300 py-2"
                 id="exampleFormControlInput1"
                 placeholder="이메일"
               />
@@ -122,13 +179,14 @@ const Order = () => {
           </div>
 
           <div className="Instruction-Main-left-form">
-            <div className="mt-5 md:mt-0 md:col-span-2 ">
+            <div className="mt-1 md:mt-0 md:col-span-2 ">
               <div className="flex w-full">
                 <div className="col-span-6 sm:col-span-3">
+                  <label className="mt-1 pl-1 text-[12px] underline underline-offset-2">이름</label>
                   <input
                     type="text"
                     name="name"
-                    value={user.name}
+                    defaultValue={user.name}
                     onChange={handleInputs}
                     className="w-[300px] mt-1 px-2 py-2 focus:ring-indigo-500 outline-none focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                     placeholder="이름"
@@ -137,18 +195,19 @@ const Order = () => {
                 </div>
               </div>
 
+              <label className="mt-4 pl-1 text-[12px] underline underline-offset-2">지번</label>
               <div className="flex w-full">
                 <div>
                   <input
                     defaultValue={myZipcode}
                     placeholder="지번 "
-                    className="w-[100px] mt-4 px-2 py-2 focus:ring-indigo-500 outline-none focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                    className="w-[100px] mt-1 px-2 py-2 focus:ring-indigo-500 outline-none focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                   ></input>
                 </div>
                 <div>
                   <button
                     onClick={() => onOpenZipcode()}
-                    className="mt-4 ml-2 focus:ring-indigo-500 py-2 px-2 outline-none focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                    className="mt-1 ml-2 focus:ring-indigo-500 py-2 px-2 outline-none focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                   >
                     주소찾기
                   </button>
@@ -164,33 +223,36 @@ const Order = () => {
                 </div>
               </div>
               <div className="col-12">
+                <label className="mt-1 pl-1 text-[12px] underline underline-offset-2">주소</label>
                 <input
                   type="text"
                   name="address"
                   defaultValue={myAddress}
-                  className="mt-2 focus:ring-indigo-500 py-2 px-2 outline-none focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  className="mt-1 focus:ring-indigo-500 py-2 px-2 outline-none focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   id="inputAddress"
                   placeholder="주소"
                 />
               </div>
               <div className="col-12">
+                <label className="mt-1 pl-1 text-[12px] underline underline-offset-2">상세주소</label>
                 <input
                   type="text"
                   name="address2"
                   defaultValue={user.address}
                   onChange={handleInput2}
-                  className="mt-2 focus:ring-indigo-500 py-2 px-2 outline-none focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  className="mt-1 focus:ring-indigo-500 py-2 px-2 outline-none focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   id="inputAddress2"
                   placeholder="상세주소"
                 />
               </div>
               <div className="col">
+              <label className="mt-4 pl-1 text-[12px] underline underline-offset-2">전화번호</label>
                 <input
                   type="number"
                   name="phone"
-                  value={user.phone}
+                  defaultValue={user.phone}
                   onChange={handleInputs}
-                  className="mt-4 mb-2 focus:ring-indigo-500 outline-none py-2 px-2 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  className="mt-1 mb-2 focus:ring-indigo-500 outline-none py-2 px-2 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   placeholder="전화번호"
                 />
               </div>
@@ -205,7 +267,7 @@ const Order = () => {
                 </div>
                 <div>
                   <button
-                    onClick={() => handleSubmit(cartItemsMore)}
+                    onClick={onClickPayment}
                     type="button"
                     className="bg-black px-4 py-2 text-white"
                   >
@@ -218,7 +280,7 @@ const Order = () => {
         </div>
 
         <div className="Instruction-Main-right">
-          <CartItemSummry />
+          <CartItemSummry setTotalPrice={setTotalPrice}  />
         </div>
       </div>
     </div>

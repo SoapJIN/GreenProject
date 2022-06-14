@@ -27,8 +27,22 @@ public class MemberServiceImpl  implements  MemberService{
 
     @Override
     public Long register(MemberDTO dto) {
-        Member member = dtoToEntity(dto);
-        memberRepository.save(member);
+        Member member = memberRepository.findByEmail(dto.getEmail());
+        if(member!=null)  {
+            member.setId(member.getId());
+            member.setAddress(dto.getAddress());
+            member.setEmail(dto.getEmail());
+            member.setName(dto.getName());
+            member.setNickname(dto.getNickname());
+            member.setPwd(dto.getPwd());
+            member.setPhone(dto.getPhone());
+            memberRepository.save(member);
+        }
+        else {
+            System.out.println("추가 서비스");
+            member = dtoToEntity(dto);
+            memberRepository.save(member);
+        }
         return member.getId();
     }
 
@@ -41,6 +55,10 @@ public class MemberServiceImpl  implements  MemberService{
             MemberDTO dto = MemberDTO.builder()
                     .email(member.getEmail())
                     .pwd(member.getPwd())
+                    .address(member.getAddress())
+                    .name(member.getName())
+                    .nickname(member.getNickname())
+                    .phone(member.getPhone())
                     .build();
             return dto;
         }  else {

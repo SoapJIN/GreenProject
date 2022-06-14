@@ -41,7 +41,6 @@ public class ItemService {
         //상품 등록
         Item item = itemDTO.createItem();
         itemRepository.save(item);
-
         //이미지 등록
         for(int i=0;i<itemImgFileList.size();i++){
             ItemImage itemImg = new ItemImage();
@@ -96,7 +95,13 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MainItemDTO> getMainItemPage(ItemSearchDTO itemSearchDTO, Pageable pageable){
-        return itemRepository.getMainItemPage(itemSearchDTO,pageable);
+    public Page<MainItemDTO> getMainItemPage(ItemSearchDTO itemSearchDTO, Pageable pageable,Integer priceStart,Integer priceEnd,String filterName,String searchName){
+        return itemRepository.getMainItemPage(itemSearchDTO,pageable,priceStart,priceEnd,filterName,searchName);
+    }
+
+    @Transactional
+    public void deleteItem(Long id){
+        itemImgRepository.deleteByItemId(id);
+        itemRepository.deleteById(id);
     }
 }

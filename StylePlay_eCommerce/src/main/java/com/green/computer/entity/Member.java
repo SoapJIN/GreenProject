@@ -1,10 +1,12 @@
 package com.green.computer.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.green.computer.constant.Role;
 import com.green.computer.dto.MemberDTO;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Builder
@@ -37,7 +39,6 @@ public class Member extends BaseEntity2{
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
     public static Member createMember(MemberDTO dto){
         Member member = Member.builder()
                 .name(dto.getName())

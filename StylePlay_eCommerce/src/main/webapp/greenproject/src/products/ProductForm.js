@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-import "../products/form.css";
 import axios from "axios";
 
 const ProductForm = () => {
@@ -10,7 +8,7 @@ const ProductForm = () => {
   const [stockNumber, setStockNumber] = useState("");
   const [itemDetail, setItemDetail] = useState("");
   const [itemSellStatus, setItemSellStatus] = useState("SELL");
-  const [itemType, setItemType] = useState("");
+  const [itemType, setItemType] = useState("outer");
 
   const onChangeImg = (e) => {
     e.preventDefault();
@@ -34,6 +32,7 @@ const ProductForm = () => {
   };
   const onChangeItemType = (e) => {
     e.preventDefault();
+    console.log(e.target.value, "확인");
     setItemType(e.target.value);
   };
 
@@ -91,92 +90,107 @@ const ProductForm = () => {
   };
 
   return (
-    <div className="ProductForm">
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div>
-          <select
-            className="mt-1 ml-1 py-2 px-2"
-            id="itemSellStatus"
-            onChange={onChangeItemSellStatus}
-            value={itemSellStatus}
-          >
-            <option value="SELL" selected>
-              판매중
-            </option>
-            <option value="SOLD_OUT">품절</option>
-          </select>
+    <div>
+      <div className="checkout">
+        <div className="checkout_left">
+          <div>
+            <h2 className="checkout_title text-3xl">상품 등록</h2>
+          </div>
         </div>
-        <div>
-          <input
-            className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="text"
-            id="itemName"
-            autoComplete="off"
-            placeholder="상품명"
-            required
-            onChange={onChangeItemName}
-          />
-        </div>
-        <div>
-          <input
-            className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="number"
-            id="price"
-            autoComplete="off"
-            placeholder="가격"
-            required
-            onChange={onChangePrice}
-          />
-        </div>
-        <div>
-          <input
-            className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="number"
-            id="stockNumber"
-            autoComplete="off"
-            placeholder="상품의 재고를 입력해주세요"
-            required
-            onChange={onChangeStockNumber}
-          />
-        </div>
-        <div>
-          <textarea
-            className="mt-1 ml-3 mb-1 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="text"
-            id="itemDetail"
-            placeholder="상품 상세 내용"
-            required
-            onChange={onChangeItemDetail}
-          />
-        </div>
-        <div>
-          <input
-            className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="text"
-            id="itemType"
-            placeholder="상품 타입 입력"
-            required
-            onChange={onChangeItemType}
-          />
-        </div>
-        <div>
-          <label htmlFor="profile-upload" />
-          <input
-            className="mt-1 ml-1 py-2 px-2"
-            type="file"
-            name="itemImgFile"
-            id="itemImgFile"
-            multiple="multiple"
-            accept="image/*"
-            onChange={onChangeImg}
-          />
-        </div>
-        <div>
-          <button className="mt-1 mb-4 ml-3 py-2 px-2 w-[80px] shadow-sm sm:text-sm border-gray-300 rounded-md">
-            상품 등록
-          </button>
-        </div>
-      </form>
+      </div>
+      <div className="ProductForm">
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div>
+            <select
+              className="mt-1 ml-1 py-2 px-2"
+              id="itemSellStatus"
+              onChange={onChangeItemSellStatus}
+              value={itemSellStatus}
+            >
+              <option value="SELL">판매중</option>
+              <option value="SOLD_OUT">품절</option>
+            </select>
+          </div>
+          <div>
+            <input
+              className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
+              type="text"
+              id="itemName"
+              autoComplete="off"
+              placeholder="상품명"
+              required
+              onChange={onChangeItemName}
+            />
+          </div>
+          <div>
+            <input
+              className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
+              type="number"
+              id="price"
+              autoComplete="off"
+              placeholder="가격"
+              required
+              onChange={onChangePrice}
+            />
+          </div>
+          <div>
+            <input
+              className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
+              type="number"
+              id="stockNumber"
+              autoComplete="off"
+              placeholder="상품의 재고를 입력해주세요"
+              required
+              onChange={onChangeStockNumber}
+            />
+          </div>
+          <div>
+            <textarea
+              className="mt-1 ml-3 mb-1 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
+              type="text"
+              id="itemDetail"
+              placeholder="상품 상세 내용"
+              required
+              onChange={onChangeItemDetail}
+            />
+          </div>
+          <div>
+            <select
+              className="mt-1 ml-3 py-2 px-2 w-[310px] shadow-sm sm:text-sm border-gray-300 rounded-md"
+              id="itemType"
+              value={itemType}
+              onChange={onChangeItemType}
+            >
+              <option value="outer" selected>
+                outer
+              </option>
+              <option value="top">top</option>
+              <option value="dress">dress</option>
+              <option value="skirt">skirt</option>
+              <option value="pants">pants</option>
+              <option value="shoes&bag">shoes&bag</option>
+              <option value="accessory">accessory</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="profile-upload" />
+            <input
+              className="mt-1 ml-1 py-2 px-2"
+              type="file"
+              name="itemImgFile"
+              id="itemImgFile"
+              multiple="multiple"
+              accept="image/*"
+              onChange={onChangeImg}
+            />
+          </div>
+          <div>
+            <button className="mt-1 mb-4 ml-3 py-2 px-2 w-[80px] shadow-sm sm:text-sm border-gray-300 rounded-md">
+              상품 등록
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

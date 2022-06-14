@@ -2,7 +2,9 @@ package com.green.computer.controller;
 
 import com.green.computer.dto.ItemDTO;
 import com.green.computer.dto.ItemSearchDTO;
+import com.green.computer.dto.MemberDTO;
 import com.green.computer.entity.Item;
+import com.green.computer.repository.ItemRepository;
 import com.green.computer.service.CartService;
 import com.green.computer.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin("*")
 @RestController
@@ -31,13 +33,20 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    private final ItemRepository itemRepository;
+
     @PostMapping(value = "/item/new")
     public ResponseEntity itemNew(@Valid ItemDTO dto, BindingResult bindingResult
-            , @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList){
+            , @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList
+            , HttpSession session
+    ){
         // bindingResult 가 뭐냐면 예외처리라고 생각하면 됨(유효성 검증)
         // 에러를 확인하고 넘겨줄 수 있게 BindingResult를 사용한다
         //  BindingResult를 사용하지 않을 시에는 Valid에서 걸리면 바로 Exception이 발생한다.
         System.out.println("itemNew---------ItemDTO:"+dto+" itemImgFileList:"+itemImgFileList.size());
+
+
+        if(session.getAttribute("login") == null) return  new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED); //로그인 상태에서만 상품을 등록할수 있도록
         if(bindingResult.hasErrors()){ // 상품 등록시 필수 값이 없다면
             System.out.println("필수값 없음");
             return new ResponseEntity(HttpStatus.BAD_REQUEST); // 입력한 필수 값이 없으면 다시 이동하게 이건 강사님한테 물어봐야함 에러코드 400
@@ -47,9 +56,16 @@ public class ItemController {
             System.out.println("이미지 없음");
             return new ResponseEntity(HttpStatus.UNAUTHORIZED); // 뭘넣어야하지 에러코드 401
         }
+        if(itemImgFileList.size()>3){ // 이미지 파일 업로드를 3개까지 제한
+            return new ResponseEntity(HttpStatus.EXPECTATION_FAILED);
+        }
+
 
         try {
-            itemService.saveItem(dto, itemImgFileList);
+            MemberDTO login = (MemberDTO) session.getAttribute("login");
+            System.out.println(login);
+            Long getID = itemService.saveItem(dto, itemImgFileList);
+            itemRepository.updateCreatedBy(login.getName(), getID);
         } catch (Exception e){
             return new ResponseEntity(HttpStatus.FORBIDDEN);  // 에러 발생시 다시 아이템 넣는 페이지로 이동하게 에러코드 403
         }
@@ -69,12 +85,6 @@ public class ItemController {
             System.out.println("필수값 없음");
             return new ResponseEntity(HttpStatus.BAD_REQUEST); //
         }
-
-
-        log.info("확인용 1번 itemImgFileList"+itemImgFileList.get(0));
-        log.info("확인용 2번 id:"+itemDTO.getId());
-        log.info(itemDTO.getItemImgIds());
-
         if(!itemImgFileList.get(0).isEmpty() && itemDTO.getId()==null){
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
@@ -104,6 +114,7 @@ public class ItemController {
         System.out.println("itemDtl2-----------itemId"+itemId);
         try {
             ItemDTO itemDTO = itemService.getItemDtl(itemId);
+            System.out.println(itemDTO);
             return new ResponseEntity(itemDTO,HttpStatus.OK);
         } catch(EntityNotFoundException e){
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -122,6 +133,15 @@ public class ItemController {
 
         return new ResponseEntity(items,HttpStatus.OK);
     }
+
+    @DeleteMapping("/items/delete/{id}")
+    public ResponseEntity itemDelete(@PathVariable("id") Long id){
+        log.info(id+"삭제된 id를 확인합니다.");
+        itemService.deleteItem(id);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 
 
 }

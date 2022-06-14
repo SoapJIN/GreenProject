@@ -6,6 +6,7 @@ const Logout = () => {
   useEffect(() => {
     axios.get("/member/logout").then((response) => {
       console.log("response", response);
+      window.location.assign("/");
     });
 
     //window.location.reload();

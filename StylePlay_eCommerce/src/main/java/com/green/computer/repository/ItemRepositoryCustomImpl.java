@@ -8,6 +8,7 @@ import com.green.computer.entity.Item;
 import com.green.computer.entity.QItem;
 import com.green.computer.entity.QItemImage;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -83,7 +84,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom{
                 .offset(pageable.getOffset()) // 데이터를 가지고 올 시작 인덱스를 지정
                 .limit(pageable.getPageSize()) // 한번에 가지고 올 최대 개수를 지정합니다.
                 .fetch(); // 리스트로 반환해서 사이즈로 해결
-                //.fetchResults(); // 조회한 리스트 및 전체 개수를 포함하는 쿼리결과를 반환  근데 이게 지금 디플리에키티드 되서 해결책 찾는중..
+        //.fetchResults(); // 조회한 리스트 및 전체 개수를 포함하는 쿼리결과를 반환  근데 이게 지금 디플리에키티드 되서 해결책 찾는중..
 
 
 
@@ -94,12 +95,21 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom{
 // https://intrepidgeeks.com/tutorial/goodbye-fetchresults-fetchcount 관령링크
     private BooleanExpression itemNameLike(String searchQuery){
 
-        return StringUtils.isEmpty(searchQuery) ? null : QItem.item.itemName.like("%"+searchQuery+"%");
+        return searchQuery.equals("Search products...") ? null : QItem.item.itemName.like("%"+searchQuery+"%");
     } // 검색어가 null이 아니면 검색어가 포함되는 상품을 반환함
-    
-    
+
+    private BooleanExpression itemFilter(String type){
+        System.out.println("itemFilter---==========type:"+type);
+        return type == null ? null : QItem.item.itemType.like("%"+type+"%");
+    }
+
+    private BooleanExpression price2(Integer priceStart,Integer priceEnd){
+        return priceStart == 0 ? null : QItem.item.price.between(priceStart,priceEnd);
+
+    }
+
     @Override
-    public Page<MainItemDTO> getMainItemPage(ItemSearchDTO itemSearchDTO, Pageable pageable) {
+    public Page<MainItemDTO> getMainItemPage(ItemSearchDTO itemSearchDTO, Pageable pageable, Integer priceStart, Integer priceEnd,String filterName,String searchName) {
 
         QItem item = QItem.item;
         QItemImage itemImage = QItemImage.itemImage;
@@ -122,13 +132,30 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom{
                 .from(itemImage)
                 .join(itemImage.item, item)
                 .where(itemImage.repimgYn.eq("Y")) // 대표이미지가 있을경우만
-                .where(itemNameLike(itemSearchDTO.getSearchQuery()))
+                .where(itemNameLike(searchName))
+                .where(itemFilter(filterName))
+                .where(price2(priceStart,priceEnd))
                 .orderBy(item.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        List<Tuple> result3 = queryFactory
+                .select(
+                        item.count(),
+                        item.id.max()
+                )
+                .from(item)
+                .where(itemFilter(filterName))
+                .where(price2(priceStart,priceEnd))
+                .where(itemNameLike(searchName))
+                .fetch();
+        Tuple tuple = result3.get(0);
 
-        return new PageImpl<>(results, pageable, results.size());
+        System.out.println("getMainItemPage:"+tuple.get(item.count()));
+        System.out.println("priceStart:"+priceStart);
+
+        return new PageImpl<>(results, pageable, tuple.get(item.count()));
     }
+
 }

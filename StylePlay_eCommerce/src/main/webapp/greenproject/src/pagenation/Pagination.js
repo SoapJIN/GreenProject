@@ -5,32 +5,32 @@ function Pagination({ total, limit, page, setPage }) {
 
   return (
     <>
-        <Nav>
-            <Button  onClick={() => setPage(page - 1)} disabled={page === 1}>
-                &lt;
+      <Nav>
+        <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
+          &lt;
+        </Button>
+        {Array(numPages)
+          .fill()
+          .map((_, i) => (
+            <Button
+              key={i + 1}
+              onClick={() => setPage(i + 1)}
+              aria-current={page === i + 1 ? "page" : null}
+            >
+              {i + 1}
             </Button>
-            {Array(numPages)
-                .fill()
-                .map((_, i) => (
-                    <Button
-                    key={i + 1}
-                    onClick={() => setPage(i + 1)}
-                    aria-current={page === i + 1 ? "page" : null}
-                    >
-                    {i + 1}
-                    </Button>
-            ))}
-            <Button onClick={() => setPage(page + 1)} disabled={page === numPages}>
-                &gt;
-            </Button>
-        </Nav>
+          ))}
+        <Button onClick={() => setPage(page + 1)} disabled={page === numPages}>
+          &gt;
+        </Button>
+      </Nav>
     </>
   );
 }
 
 const Nav = styled.nav`
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 4px;
   margin: 16px;
@@ -55,16 +55,16 @@ const Button = styled.button`
   }
 
   &[disabled] {
-    border:0;
+    border: 0;
     background: gainsboro;
-    color:white;
+    color: white;
     cursor: revert;
     transform: revert;
   }
 
   &[aria-current] {
     background: black;
-    color : white;
+    color: white;
     font-weight: bold;
     cursor: revert;
     transform: revert;

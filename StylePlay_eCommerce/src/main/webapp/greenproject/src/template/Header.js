@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,12 +10,15 @@ function Header() {
   const [openedDrawer, setOpenedDrawer] = useState(false); // useState 변수 선언 토글을 하기 위해 처음을 false 선언
   const [cartItemsMore, setCartItemsMore] = useState([]);
   const [user_data, setUser_data] = useState({});
+  const [email, setEmail] = useState("");
 
+  //로그인한 개인정보 가져옴!
   useMemo(() => {
     const fetchData = async () => {
       const response = await axios.get("/main2");
       console.log("response_user:", response.data);
       setUser_data(response.data);
+      setEmail(response.data.email);
     };
     fetchData();
   }, []);
@@ -46,6 +50,14 @@ function Header() {
     window.location.href = "/member/mypage";
   };
 
+  function changeMember(event) {
+    axios.get("/member/edit/" + email).then((response) => {
+      console.log("response_user:", response.data);
+      setUser_data(response.data);
+      setEmail(response.data.email);
+    });
+  }
+
   //email에 맞는 cartItemS 가져오기
   useEffect(() => {
     const getCartItems = async () => {
@@ -76,6 +88,11 @@ function Header() {
     }
   }, [cartItemsMore, dispatch]);
 
+  //1:1문의
+  const qna = () => {
+    window.location.href = "/notice/contact";
+  };
+
   return (
     <header>
       <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-white border-bottom">
@@ -104,6 +121,21 @@ function Header() {
                   onClick={changeNav}
                 >
                   Explore
+                </Link>
+              </li>
+              <li>
+                <Link to="/board" className="nav-link" replace onClick={changeNav}>
+                  Board
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to={"/notice/main"}
+                  className="nav-link"
+                  replace
+                  onClick={changeNav}
+                >
+                  Notice
                 </Link>
               </li>
             </ul>
@@ -149,6 +181,16 @@ function Header() {
                   </li>
                   <li>
                     <Link
+                      to={"/member/edit/" + email} //회원 수정 창으로 이동
+                      className="dropdown-item"
+                      onClick={changeMember}
+                    >
+                      <FontAwesomeIcon icon="fa-solid fa-user-pen" />
+                      　edit user
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       to="/member/login"
                       className="dropdown-item"
                       onClick={changeNav}
@@ -188,7 +230,16 @@ function Header() {
                       　OrderHistory
                     </Link>
                   </li>
-                  {/* {member.role === "admin" &&  */}
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/notice/contact"}
+                      onClick={qna}
+                    >
+                      <FontAwesomeIcon icon={faCommentDots} />
+                      　contact
+                    </Link>
+                  </li>
                   <hr />
                   <li>
                     <Link to="/productForm" className="dropdown-item">
@@ -197,9 +248,9 @@ function Header() {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/productModify" className="dropdown-item">
+                    <Link to="/productSellerList" className="dropdown-item">
                       <FontAwesomeIcon icon="fa-solid fa-user-tie" />
-                      　productModify
+                      　productSellerList
                     </Link>
                   </li>
                   {/* } */}

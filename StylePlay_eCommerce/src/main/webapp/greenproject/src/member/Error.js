@@ -12,7 +12,19 @@ const Error = () => {
     getMember();
   }, []);
 
-  return <>에러발생</>;
+  return (
+    <>
+      <div className="container">
+        <div className="container-login">
+          <div className="wrap-login">
+            <span className="login-form-title">
+              아이디와 비밀번호를 확인해주세요.
+            </span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Error;

@@ -13,17 +13,21 @@ import {
   ProdPrice,
 } from "./StyledComponents/CartItemSummryStyled";
 
-const CartItemSummry = () => {
+const CartItemSummry = ({setTotalPrice}) => {
 
   const basket = useSelector((state) => state.basket.basket);
+  console.log("basket",basket);
 
-  let sum = 0;
+
+
+  let sum=0;
   return (
     <RightBox>
       <RightInnerBox>
         <ProdSummryBox>
           {basket.map((prod,index) => {
-            sum = sum + prod.price * prod.count;
+            sum=sum + prod.price * prod.count
+            setTotalPrice(sum)
             return (
               <ProductDiv key={index}>
                 <ProdImgData>
@@ -55,12 +59,6 @@ const CartItemSummry = () => {
           <div>
             <p>배송비</p>
             <p>Free</p>
-          </div>
-          <div>
-            <p>할인</p>
-            <p>
-              <span>{0}</span>원
-            </p>
           </div>
         </PriceBox>
         <TotalBox>

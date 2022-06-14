@@ -18,7 +18,7 @@ const Login = () => {
       const member = { email, pwd };
 
       try {
-        if (id !== undefined) alert("등록되었습니다.");
+        if (id !== undefined) alert("회원가입 완료되었습니다.");
         console.log("member: ", member);
         const result = await axios.post("/member/login/" + id, member);
         console.log(result);

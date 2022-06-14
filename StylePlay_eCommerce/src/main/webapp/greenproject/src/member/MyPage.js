@@ -21,8 +21,10 @@ const MyPage = () => {
     getMember();
     //window.location.reload();
   }, []);
+
+
   console.log(success);
-  console.log(member);
+  console.log("1빠따",member);
 
   return (
     <div>

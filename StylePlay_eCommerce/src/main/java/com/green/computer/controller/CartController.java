@@ -31,12 +31,15 @@ public class CartController {
     public ResponseEntity cartItemsGet(HttpSession session){
         System.out.println("cartItemsGet---------session:"+session.getAttribute("login"));
         MemberDTO memberDTO = (MemberDTO) session.getAttribute("login");
+        if(memberDTO == null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
         List<CartDetailDTO> cartDetailList = cartService.getCartList(memberDTO.getEmail());
         return new ResponseEntity(cartDetailList,HttpStatus.OK);
     }
 
     //products,상세 페이지에서 장바구니 추가
-    @PostMapping(value = {"/item/cart/{itemId}","/products/item/cart/{itemId}"})
+    @PostMapping(value = {"/item/cart/{itemId}","/products/item/cart/{itemId}","/products/cate/item/cart/{itemId}"})
     public ResponseEntity itemCartAdd(@RequestBody CartItemDTO cartItemDTO, HttpSession session , BindingResult bindingResult){
         System.out.println("itemCartAdd---------cartItemDTO:"+cartItemDTO+"session:"+session.getAttribute("login"));
         MemberDTO memberDTO = (MemberDTO) session.getAttribute("login");

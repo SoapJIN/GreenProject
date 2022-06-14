@@ -23,6 +23,7 @@ const OrderHistory = () => {
     };
     fetchData();
   }, []);
+
   const handlecancel = (e) => {
     let orderId = e.target.value;
     const fetchData = async () => {
@@ -113,6 +114,7 @@ const OrderHistory = () => {
             value={limit}
             onChange={({ target: { value } }) => setLimit(Number(value))}
           >
+            <option value="2">2</option>
             <option value="5">5</option>
             <option value="10">10</option>
           </select>
