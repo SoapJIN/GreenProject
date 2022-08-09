@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/StylePlay_eCommerce/static/css/main.278e9bb4.css",
-    "main.js": "/StylePlay_eCommerce/static/js/main.91f116f4.js",
-    "static/media/banner-1.jpg": "/StylePlay_eCommerce/static/media/banner-1.5231b9fe72997da4b2a5.jpg",
-    "static/media/banner-2.jpg": "/StylePlay_eCommerce/static/media/banner-2.206a181429b910693adf.jpg",
-    "static/media/banner-0.jpg": "/StylePlay_eCommerce/static/media/banner-0.2b427142af7636ceb40c.jpg",
-    "index.html": "/StylePlay_eCommerce/index.html",
-    "main.278e9bb4.css.map": "/StylePlay_eCommerce/static/css/main.278e9bb4.css.map",
-    "main.91f116f4.js.map": "/StylePlay_eCommerce/static/js/main.91f116f4.js.map"
+    "main.css": "/static/css/main.a8921c47.css",
+    "main.js": "/static/js/main.96dab5ec.js",
+    "static/media/banner-1.jpg": "/static/media/banner-1.5231b9fe72997da4b2a5.jpg",
+    "static/media/banner-2.jpg": "/static/media/banner-2.206a181429b910693adf.jpg",
+    "static/media/banner-0.jpg": "/static/media/banner-0.2b427142af7636ceb40c.jpg",
+    "index.html": "/index.html",
+    "main.a8921c47.css.map": "/static/css/main.a8921c47.css.map",
+    "main.96dab5ec.js.map": "/static/js/main.96dab5ec.js.map"
   },
   "entrypoints": [
-    "static/css/main.278e9bb4.css",
-    "static/js/main.91f116f4.js"
+    "static/css/main.a8921c47.css",
+    "static/js/main.96dab5ec.js"
   ]
 }
