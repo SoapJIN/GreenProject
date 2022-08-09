@@ -1,1 +1,1 @@
-<span> "http://SoapJIN.github.io/StylePlay_eCommerce"</span>
+<span> "http://SoapJIN.github.io/StylePlay"</span>
